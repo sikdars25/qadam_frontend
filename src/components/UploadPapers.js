@@ -24,6 +24,7 @@ const UploadPapers = ({ user }) => {
   // Question Parsing State
   const [parsingPaper, setParsingPaper] = useState(null);
   const [parsedQuestions, setParsedQuestions] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [showParsedQuestions, setShowParsedQuestions] = useState(false);
   const [parsingLoading, setParsingLoading] = useState(false);
   const [parsingMessage, setParsingMessage] = useState({ type: '', text: '' });
@@ -294,6 +295,7 @@ const UploadPapers = ({ user }) => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 

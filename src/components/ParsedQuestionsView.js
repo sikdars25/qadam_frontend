@@ -10,6 +10,7 @@ const ParsedQuestionsView = ({ paperId, onClose, embedded = false }) => {
   const [selectedDiagram, setSelectedDiagram] = useState(null);
   const [selectedPaper, setSelectedPaper] = useState(paperId || 'all');
   const [groupByPaper, setGroupByPaper] = useState(!paperId); // Group by default when viewing all
+  // eslint-disable-next-line no-unused-vars
   const [selectedReasoning, setSelectedReasoning] = useState(null);
   const [solvingQuestion, setSolvingQuestion] = useState(false);
   const [selectedSolution, setSelectedSolution] = useState(null);
@@ -26,6 +27,7 @@ const ParsedQuestionsView = ({ paperId, onClose, embedded = false }) => {
     let remainingText = inlineInstructionMatch ? text.replace(inlineInstructionMatch[0], '').trim() : text;
     
     // Extract MCQ options: (A), (B), (C), (D) or A), B), C), D)
+    // eslint-disable-next-line no-useless-escape
     const mcqPattern = /\(([A-D])\)\s*([^\(\)]+?)(?=\([A-D]\)|$)/gi;
     const mcqMatches = [...remainingText.matchAll(mcqPattern)];
     
@@ -78,6 +80,7 @@ const ParsedQuestionsView = ({ paperId, onClose, embedded = false }) => {
 
   useEffect(() => {
     fetchParsedQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paperId]);
 
   const fetchParsedQuestions = async () => {
@@ -251,6 +254,7 @@ const ParsedQuestionsView = ({ paperId, onClose, embedded = false }) => {
                   const parsedData = q.parsed_data ? JSON.parse(q.parsed_data) : {};
                   
                   let displayNumber = q.question_number;
+                  // eslint-disable-next-line no-useless-escape
                   const numberMatch = q.question_text.match(/^(\d+)\s*[\.\)]/);
                   if (numberMatch) {
                     displayNumber = numberMatch[1];
@@ -373,6 +377,7 @@ const ParsedQuestionsView = ({ paperId, onClose, embedded = false }) => {
               
               // Extract question number from question_text if it starts with a number
               let displayNumber = q.question_number;
+              // eslint-disable-next-line no-useless-escape
               const numberMatch = q.question_text.match(/^(\d+)\s*[\.\)]/);
               if (numberMatch) {
                 displayNumber = numberMatch[1];

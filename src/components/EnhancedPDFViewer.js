@@ -18,6 +18,7 @@ const EnhancedPDFViewer = ({ paperId, textbookId, onClose }) => {
     if (paperId && textbookId) {
       analyzeQuestionPaper();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paperId, textbookId]);
 
   const analyzeQuestionPaper = async () => {
@@ -124,8 +125,10 @@ const EnhancedPDFViewer = ({ paperId, textbookId, onClose }) => {
       .replace(/^([A-Z][^:\n]{0,50}:)\s*/gm, '<strong class="highlight-heading">$1</strong> ')
       
       // Mathematical equations and formulas (with = sign)
+      /* eslint-disable no-useless-escape */
       .replace(/([A-Za-z0-9₀-₉]+\s*[\+\-\×\÷\*\/]\s*[A-Za-z0-9₀-₉]+\s*=\s*[A-Za-z0-9₀-₉\+\-\×\÷\*\/\(\)\[\]\{\}\^\s\.]+)/g, '<strong class="highlight-formula">$1</strong>')
       .replace(/([A-Za-z0-9₀-₉]+\s*=\s*[A-Za-z0-9₀-₉\+\-\×\÷\*\/\(\)\[\]\{\}\^\s\.]+)/g, '<strong class="highlight-formula">$1</strong>')
+      /* eslint-enable no-useless-escape */
       
       // Chemical formulas (H₂O, CO₂, NaCl, etc.) - only when subscripts present
       .replace(/\b([A-Z][a-z]?[₀-₉]+[A-Za-z₀-₉]*)\b/g, '<strong class="highlight-chemical">$&</strong>')

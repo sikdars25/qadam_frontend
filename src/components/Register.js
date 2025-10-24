@@ -15,6 +15,7 @@ const Register = ({ onBack, onRegisterSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [activationSent, setActivationSent] = useState(false);
   const [activationLink, setActivationLink] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [emailSent, setEmailSent] = useState(false);
 
   const handleChange = (e) => {

@@ -7,10 +7,13 @@ const ChapterQuestions = () => {
   const [textbooks, setTextbooks] = useState([]);
   const [selectedPaper, setSelectedPaper] = useState(null);
   const [selectedTextbook, setSelectedTextbook] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [chapters, setChapters] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [chapterStats, setChapterStats] = useState([]);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [questions, setQuestions] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [showTextbookModal, setShowTextbookModal] = useState(false);
@@ -100,12 +103,14 @@ const ChapterQuestions = () => {
   useEffect(() => {
     fetchPapers();
     fetchAllTextbooks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (selectedPaper && selectedTextbook) {
       calculateChapterStats();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPaper, selectedTextbook]);
 
   const fetchPapers = async () => {
@@ -214,13 +219,7 @@ const ChapterQuestions = () => {
     }
   };
 
-  const handleClearResults = () => {
-    setSemanticSearchResults(null);
-    setQuestions([]);
-    setSelectedChapter(null);
-    setChapterStats([]); // Clear the chapter stats table
-    setMessage({ type: 'info', text: 'Search results cleared. Ready for new search.' });
-  };
+  // Removed unused function handleClearResults
 
   const handleIndexAndMatch = async () => {
     // Unified workflow: Index textbook (if needed) + Run AI Search
@@ -362,149 +361,8 @@ const ChapterQuestions = () => {
     }
   };
 
-  const handleIndexTextbook = async () => {
-    // Legacy function - kept for backward compatibility
-    if (!selectedTextbook || !selectedTextbook.uploadedId) {
-      setMessage({ type: 'warning', text: 'Please select a textbook first' });
-      return;
-    }
-
-    setIsSearching(true);
-    setMessage({ type: 'info', text: '📚 Indexing textbook... This may take a few minutes.' });
-
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/api/index-textbook/${selectedTextbook.uploadedId}`
-      );
-
-      if (response.data.success) {
-        setMessage({
-          type: 'success',
-          text: `✅ Textbook indexed successfully! ${response.data.chapters_count} chapters indexed. You can now run AI semantic search.`
-        });
-      } else {
-        throw new Error(response.data.error || 'Indexing failed');
-      }
-    } catch (err) {
-      console.error('Error indexing textbook:', err);
-      setMessage({
-        type: 'error',
-        text: `Failed to index textbook: ${err.response?.data?.error || err.message}`
-      });
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleRunSemanticSearch = async () => {
-    if (!selectedPaper || !selectedTextbook) {
-      setMessage({ type: 'warning', text: 'Please select both a question paper and textbook first' });
-      return;
-    }
-
-    if (!selectedTextbook.uploadedId) {
-      setMessage({ type: 'warning', text: 'Please upload the textbook to use AI semantic search' });
-      return;
-    }
-
-    setIsSearching(true);
-    setMessage({ type: 'info', text: '🤖 Running AI Search with LLM analysis...' });
-
-    try {
-      // Fetch all questions from the selected paper
-      const response = await axios.get(
-        `http://localhost:5000/api/parsed-questions?paper_id=${selectedPaper.id}`
-      );
-      
-      const allQuestions = response.data;
-
-      // Use semantic search to map questions to chapters
-      const mappingResponse = await axios.post(
-        'http://localhost:5000/api/map-questions-to-chapters',
-        {
-          questions: allQuestions,
-          textbook_id: selectedTextbook.uploadedId
-        }
-      );
-      
-      if (mappingResponse.data.success) {
-        const mappedQuestions = mappingResponse.data.mapped_questions;
-        
-        // Group questions by chapter
-        const chapterGroups = {};
-        const unmatchedQuestions = [];
-        
-        mappedQuestions.forEach(q => {
-          if (q.chapters && q.chapters.length > 0) {
-            const topChapter = q.chapters[0]; // Use best match
-            const chapterKey = topChapter.chapter_title;
-            
-            if (!chapterGroups[chapterKey]) {
-              chapterGroups[chapterKey] = {
-                chapter: topChapter,
-                questions: []
-              };
-            }
-            chapterGroups[chapterKey].questions.push(q);
-          } else {
-            // No chapter match found
-            unmatchedQuestions.push(q);
-          }
-        });
-        
-        // Add unmatched questions as a separate group if any exist
-        if (unmatchedQuestions.length > 0) {
-          chapterGroups['Unmatched Questions'] = {
-            chapter: {
-              chapter_number: 0,
-              chapter_title: 'Unmatched Questions',
-              page_start: 'N/A',
-              page_end: 'N/A',
-              similarity_score: 0
-            },
-            questions: unmatchedQuestions
-          };
-        }
-        
-        const totalQuestions = Object.values(chapterGroups).reduce((sum, data) => sum + data.questions.length, 0);
-        
-        console.log('Chapter groups created:', Object.keys(chapterGroups));
-        console.log('Full chapter groups:', chapterGroups);
-        
-        // Clear old chapter stats to show only AI results
-        setChapterStats([]);
-        
-        setSemanticSearchResults(chapterGroups);
-        setMessage({
-          type: 'success',
-          text: `🤖 AI Search Complete! Found ${Object.keys(chapterGroups).length} chapters with ${totalQuestions} questions (${unmatchedQuestions.length} unmatched). Click on a chapter below to view questions.`
-        });
-        
-        // Save results to database
-        await saveSearchResults(chapterGroups);
-      } else {
-        throw new Error('Semantic search failed');
-      }
-    } catch (err) {
-      console.error('Error in semantic search:', err);
-      const errorMsg = err.response?.data?.error || err.message;
-      
-      // Check if it's an indexing issue
-      if (errorMsg.includes('No vector index found') || errorMsg.includes('index')) {
-        setMessage({ 
-          type: 'error', 
-          text: '⚠️ Textbook not indexed. Please click "Index Textbook" button first.' 
-        });
-      } else {
-        setMessage({ 
-          type: 'error', 
-          text: `AI semantic search failed: ${errorMsg}` 
-        });
-      }
-    } finally {
-      setIsSearching(false);
-    }
-  };
+  // Removed unused functions: handleIndexTextbook, handleRunSemanticSearch, handleClearResults
+  // Their functionality has been merged into handleIndexAndMatch
 
   const saveSearchResults = async (chapterGroups) => {
     try {
@@ -1620,10 +1478,12 @@ const ChapterQuestions = () => {
                   
                   lines.forEach((line, idx) => {
                     // Detect ASCII art diagram patterns (box drawing characters)
-                    const isAsciiArt = line.match(/^[\s]*[\+\-\|\/\\<>]+[\s\+\-\|\/\\<>]*$/) || 
-                                      line.match(/^[\s]*[\+\-\|]{3,}/) ||
-                                      line.match(/[\+\-]{5,}/) ||
+                    /* eslint-disable no-useless-escape */
+                    const isAsciiArt = line.match(/^[\s]*[+\-|/\\<>]+[\s+\-|/\\<>]*$/) || 
+                                      line.match(/^[\s]*[+\-|]{3,}/) ||
+                                      line.match(/[+\-]{5,}/) ||
                                       (line.includes('|') && line.includes('+'));
+                    /* eslint-enable no-useless-escape */
                     
                     // Detect diagram start/end
                     if (line.match(/^\*\*Diagram/i) || line.includes('```') || (!inDiagram && isAsciiArt)) {

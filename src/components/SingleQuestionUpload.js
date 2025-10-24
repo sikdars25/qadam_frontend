@@ -10,6 +10,7 @@ const SingleQuestionUpload = ({ onClose, onQuestionParsed }) => {
   const [error, setError] = useState('');
   const [parsedQuestion, setParsedQuestion] = useState(null);
   const [solution, setSolution] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [solving, setSolving] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Solving...');
 
@@ -319,9 +320,11 @@ const SingleQuestionUpload = ({ onClose, onQuestionParsed }) => {
                   
                   lines.forEach((line, idx) => {
                     // Detect ASCII art diagram patterns (box drawing characters)
+                    /* eslint-disable no-useless-escape */
                     const isAsciiArt = line.match(/^[\s]*[\+\-\|\/\\<>]+[\s\+\-\|\/\\<>]*$/) || 
                                       line.match(/^[\s]*[\+\-\|]{3,}/) ||
                                       line.match(/[\+\-]{5,}/) ||
+                    /* eslint-enable no-useless-escape */
                                       (line.includes('|') && line.includes('+'));
                     
                     // Detect diagram start/end
