@@ -10,6 +10,7 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
+    "prebuild": "chmod +x ./node_modules/.bin/react-scripts || true",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
