@@ -41,8 +41,8 @@ const Login = ({ onLogin }) => {
         <div className="login-header">
           <div className="login-icon">🎓</div>
           <h1>
-            <span className="brand-name">qadam</span>
-            <span className="brand-subtitle">Academic Portal</span>
+            <span className="brand-name">Qadam</span>
+            <span className="brand-subtitle">Step up your prep</span>
           </h1>
         </div>
 
